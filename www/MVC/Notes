@@ -1,0 +1,21 @@
+DONE :
+
+-> logout action
+-> change Password
+-> change Email
+-> delete account
+-> upload files
+-> rename tables + columns(camelcase)
+-> encrypt file name ( partially)
+->  md5
+
+TO DO:
+
+ * display files in view mode
+ * separate picture display from controller ( create a view function)
+ * delete files ? -> create different folders for each user
+ * download
+ * delete user -> delete user file ( database error)
+ *             -> works if user has no files uploaded
+
+
