@@ -9,13 +9,7 @@ session_start();
 $controller = new Controller();
 
 $action = $_REQUEST['action'] ?? '';
-//$accountAction = $_REQUEST['accountAction'] ?? '';
 
-/*// Check if logged in
-if (isset($_SESSION['id']) && $_SESSION['id'] > 0){
-    $action = 'userLoggedIn';
-}*/
-var_dump($action);
 switch ($action) {
     case 'userLoggedIn':
         /*switch ($accountAction){
@@ -70,6 +64,7 @@ switch ($action) {
         break;
 }
 
+var_dump($action);
 var_dump($_SESSION);
 var_dump($_REQUEST);
 

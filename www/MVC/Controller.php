@@ -70,8 +70,8 @@ class Controller{
         if ($this->isUserLoggedIn()) {
             $this->redirect('index.php?action=userLoggedIn');
         }
-        $user = $_REQUEST['user'];
-        $password = $_REQUEST['password'];
+        $user = $_REQUEST['user']??'';
+        $password = $_REQUEST['password']??'';
 
         $page = $this->model->getLogin($user, $password);
         if ($page == true) {
@@ -279,7 +279,11 @@ class Controller{
     //Upload files
     //Redirects to home page after upload
     public function uploadFiles(){
-
+        
+        if ($_FILES['fileToUpload']['size'] == 0){
+            echo "Please select a file";
+            return $this->loggedInFormAction();
+        }
         ///Upload files to directory
 
         // Directory where the file is going to be placed

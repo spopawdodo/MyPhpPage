@@ -177,8 +177,7 @@ class Model{
         $sql ="INSERT INTO Users (User, Password, Email, PasswordTimestamp) VALUES ('$myusername', '$mypassword', '$myemail', now());";
 
         $result = mysqli_query($db, $sql);
-        var_dump($result);
-        var_dump($sql);
+
         mysqli_close($db);
 
         if (!$result){
