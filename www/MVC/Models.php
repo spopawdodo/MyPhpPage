@@ -19,18 +19,12 @@ class Model{
     }
 
     ///Verify Database
-
-    public function getLogin(){
+    //True  -> user and password successfully found
+    //False -> no / more than one user & password found
+    public function getLogin($user, $password){
         $db = $this->connect();
-        if (isset($_REQUEST['user']) && isset($_REQUEST['password'])){
-            $myusername = mysqli_real_escape_string($db,$_REQUEST['user']);
-            $mypassword = mysqli_real_escape_string($db,sha1($_REQUEST['password']));
-        }
-        else{
-            echo "User and Password are required!";
-            return "User and Password are required!";
-
-        }
+        $myusername = mysqli_real_escape_string($db,$user);
+        $mypassword = mysqli_real_escape_string($db,sha1($password));
 
         // Select query
         $sql = "SELECT UserId FROM Users WHERE User = '$myusername' and Password = '$mypassword';";
@@ -42,35 +36,21 @@ class Model{
         mysqli_close($db);
 
         if ($count == 1){
-            //var_dump($result);
-        }else{
-            echo "User or Password invalid!";
-            return "User or Password invalid!";
+            return true;
         }
+        echo "User or Password invalid!";
+        return false;
 
-        return "UserPage";
     }
 
     //-1 error in data
     // returns the count of the results
-    public function checkUser():int {
+    public function checkUser($user, $email):int {
         $db = $this->connect();
-        if (isset($_SESSION['user'])){
-            $myusername = mysqli_real_escape_string($db,$_SESSION['user']);
-        } else {if(isset($_REQUEST['newUser'])) {
-            $myusername = mysqli_real_escape_string($db,$_REQUEST['newUser']);
-        } else {
-            echo "Username is required! ";
-            return -1;
-        }}
-        if (isset($_REQUEST['email'])){
-            $myemail = mysqli_real_escape_string($db,$_REQUEST['email']);
-        }
-        else{
-            echo "Email is required! ";
-            return -1;
 
-        }
+        $myusername = mysqli_real_escape_string($db,$user);
+        $myemail = mysqli_real_escape_string($db,$email);
+
         // Select query
         $sql = "SELECT UserId FROM Users WHERE User = '$myusername' or Email = '$myemail';";
         $result = mysqli_query($db,$sql);
@@ -78,20 +58,15 @@ class Model{
         $count = mysqli_num_rows($result);
 
         mysqli_close($db);
-        var_dump($count);
+
         return $count;
     }
 
-    public function checkEmail():int {
+    public function checkEmail($email):int {
         $db = $this->connect();
-        var_dump($_REQUEST);
-        if (isset($_REQUEST['email'])){
-            $myemail = mysqli_real_escape_string($db,$_REQUEST['newEmail']);
-        }
-        else{
-            echo "Email is required! ";
-            return -1;
-        }
+
+        $myemail = mysqli_real_escape_string($db,$email);
+
         // Select query
         $sql = "SELECT UserId FROM Users WHERE Email = '$myemail';";
         $result = mysqli_query($db,$sql);
@@ -99,24 +74,18 @@ class Model{
         $count = mysqli_num_rows($result);
 
         mysqli_close($db);
-        var_dump($count);
+
         return $count;
     }
 
     //True -> the old password is correct
     //False -> wrong password
-    public function checkPassword():bool{
+    public function checkPassword($user, $password):bool{
         $db = $this->connect();
-        if (isset($_SESSION['user']) && isset($_REQUEST['password1'])){
-            $myusername = mysqli_real_escape_string($db,$_SESSION['user']);
-            $mypassword = mysqli_real_escape_string($db,$_REQUEST['password1']);
-            $mypassword = sha1($mypassword);
-        }
-        else{
-            echo "All password fields are required! ";
-            return true;
+        $myusername = mysqli_real_escape_string($db,$user);
+        $mypassword = mysqli_real_escape_string($db,$password);
+        $mypassword = sha1($mypassword);
 
-        }
         // Select query
         $sql = "SELECT UserId FROM Users WHERE User = '$myusername' and Password = '$mypassword';";
         $result = mysqli_query($db,$sql);
@@ -163,10 +132,10 @@ class Model{
     // True -> task performed successfully
     // False -> task failed
 
-    public function changePassword():bool{
+    public function changePassword($user, $password):bool{
         $db = $this->connect();
-        $myusername = mysqli_real_escape_string($db,$_SESSION['user']);
-        $mypassword = mysqli_real_escape_string($db,$_REQUEST['newPassword1']);
+        $myusername = mysqli_real_escape_string($db,$user);
+        $mypassword = mysqli_real_escape_string($db,$password);
 
         $mypassword = sha1($mypassword);
 
@@ -183,29 +152,24 @@ class Model{
 
     }
 
-    public function changeEmail():bool{
+    public function changeEmail($user, $email):bool{
         $db = $this->connect();
-        $myusername = mysqli_real_escape_string($db,$_SESSION['user']);
-        $myemail = mysqli_real_escape_string($db,$_REQUEST['newEmail']);
+        $myusername = mysqli_real_escape_string($db,$user);
+        $myemail = mysqli_real_escape_string($db,$email);
 
         $sql = "UPDATE Users SET Email = '$myemail' where User = '$myusername'";
 
         $result = mysqli_query($db, $sql);
-        var_dump($result);
 
         mysqli_close($db);
-
-        if (!$result)
-            return false;
-        return true;
-
+        return $result;
     }
 
-    public function createAccount():bool{
+    public function createAccount($user, $password, $email):bool{
         $db = $this->connect();
-        $myusername = mysqli_real_escape_string($db,$_REQUEST['newUser']);
-        $mypassword = mysqli_real_escape_string($db,$_REQUEST['password1']);
-        $myemail = mysqli_real_escape_string($db,$_REQUEST['email']);
+        $myusername = mysqli_real_escape_string($db,$user);
+        $mypassword = mysqli_real_escape_string($db,$password);
+        $myemail = mysqli_real_escape_string($db,$email);
 
         $mypassword = sha1($mypassword);
 
@@ -214,6 +178,7 @@ class Model{
 
         $result = mysqli_query($db, $sql);
         var_dump($result);
+        var_dump($sql);
         mysqli_close($db);
 
         if (!$result){
@@ -223,9 +188,9 @@ class Model{
         return true;
     }
 
-    public function deleteAccount():bool{
+    public function deleteAccount($myusername):bool{
         $db = $this->connect();
-        $myusername = mysqli_real_escape_string($db,$_SESSION['user']);
+        $myusername = mysqli_real_escape_string($db,$myusername);
 
         $sql ="DELETE FROM Users where User = '$myusername';";
 
@@ -262,12 +227,27 @@ class Model{
     }
     */
 
-    public function uploadFileData($myImageName):bool{
+    public function getFileExtension($filename){
         $db = $this->connect();
 
-        $myuserid = $_SESSION['id'];
+        // Select query
+        $sql = "SELECT Extension FROM Images WHERE Image = '$filename';";
 
-        $sql = "INSERT INTO Images (Image, UserId, UploadTime) VALUES ('$myImageName','$myuserid', now())";
+        $result = mysqli_query($db,$sql);
+
+        $count = mysqli_num_rows($result);
+
+        $rows = mysqli_fetch_array($result,MYSQLI_ASSOC);
+        mysqli_close($db);
+        if ($count != 1)
+            return "";
+        return $rows['Extension'];
+    }
+
+    public function uploadFileData( $userId ,$myImageName, $imageFileType):bool{
+        $db = $this->connect();
+
+        $sql = "INSERT INTO Images (Image, UserId, UploadTime, Extension) VALUES ('$myImageName','$userId', now(), '$imageFileType')";
 
         $result = mysqli_query($db,$sql);
 
@@ -304,18 +284,33 @@ class Model{
         return true;
     }
 
+    //True -> delete successful
+    //False-> error
+    public function deleteFile($userId, $image):bool{
+        $db = $this->connect();
+        $myuserid = mysqli_real_escape_string($db,$userId);
+
+        $sql ="DELETE FROM Images where UserId = '$myuserid' and Image = '$image';";
+
+        $result = mysqli_query($db, $sql);
+        mysqli_close($db);
+
+        return $result;
+    }
+
     //Returns the files saved for the logged in user
-    public function getUserFiles(){
+    public function getUserFiles($userId){
         $db = $this->connect();
 
-        $myuserid = mysqli_real_escape_string($db,$_SESSION['id']);
+        $myuserid = mysqli_real_escape_string($db,$userId);
 
         $sql = "SELECT Image FROM Images WHERE UserId = '$myuserid';";
         $result = mysqli_query($db,$sql);
 
-        mysqli_close($db);
+        $rows = mysqli_fetch_all($result,MYSQLI_ASSOC);
 
-        return $result;
+        mysqli_close($db);
+        return $rows;
 
     }
 }

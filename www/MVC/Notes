@@ -7,15 +7,22 @@ DONE :
 -> upload files
 -> rename tables + columns(camelcase)
 -> encrypt file name ( partially)
-->  md5
+-> md5
+-> separate picture display from controller ( create a view function)
+-> delete user -> delete user file
+               -> works if user has no files uploaded
+               -> delete file from directory
+-> display files in view mode
+-> download
+-> alter table -> add column extension
+-> change model functions
+
+
 
 TO DO:
 
- * display files in view mode
- * separate picture display from controller ( create a view function)
- * delete files ? -> create different folders for each user
- * download
- * delete user -> delete user file ( database error)
- *             -> works if user has no files uploaded
+ * bootstrap
+
+
 
 

@@ -3,6 +3,7 @@
 <head>
 
     <title> Logged in </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
@@ -14,13 +15,13 @@
     if ($_SESSION['id'] <= 0){
         echo "You are not a user !<br> You must log in.";
 
-?>
+?><div>
         <form action="../../index.php" method = "post">
             <input type = "hidden" name = "action" value = "authenticate">
             <input type="submit" value="Log in">
 
         </form>
-
+</div>
 <?php } else{ ?>
 
 <p> Hello <?php echo ($_SESSION['user']) ?>!</p>

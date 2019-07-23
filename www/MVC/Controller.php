@@ -70,16 +70,17 @@ class Controller{
         if ($this->isUserLoggedIn()) {
             $this->redirect('index.php?action=userLoggedIn');
         }
+        $user = $_REQUEST['user'];
+        $password = $_REQUEST['password'];
 
-        $page = $this->model->getLogin();
-        if ($page == "UserPage") {
+        $page = $this->model->getLogin($user, $password);
+        if ($page == true) {
             $_SESSION['user'] = $_REQUEST['user'];
             $id = $this->model->getUserId();
             if ($id > 0)
                 $_SESSION['id'] = $id;
             else
                 $_SESSION['id'] = 0;
-            //return $this->loggedInFormAction();
             $this->redirect('index.php');
         }
         else{
@@ -104,18 +105,21 @@ class Controller{
     public function signUpUserAction(){
         if (!empty($_REQUEST['newUser']) && !empty($_REQUEST['email']) && !empty($_REQUEST['password1']) && !empty($_REQUEST['password2'])){
             if($_REQUEST['password1'] == $_REQUEST['password2']){
-                $isFree = $this->model->checkUser();
+                $user = $_REQUEST['newUser'];
+                $password = $_REQUEST['password1'];
+                $email = $_REQUEST['email'];
+                $isFree = $this->model->checkUser($user, $email);
                 if ($isFree != 0){
                     echo "Username taken !";
                     return $this->signUpFormAction();
                 }
-                $accountCreated = $this->model->createAccount();
+                $accountCreated = $this->model->createAccount($user, $password, $email);
                 if (!$accountCreated){
                     echo "Database Error !";
                     return  $this->signUpFormAction();
                 }
                 else{
-                    $_SESSION['user'] = $_REQUEST['newUser'];
+                    $_SESSION['user'] = $user;
                     $_SESSION['id'] = $this->model->getUserId();
                     header('Location: index.php?action=userLoggedIn');
                     exit;
@@ -151,23 +155,28 @@ class Controller{
 
         //Both new password must be identical
 
-        if ($_REQUEST['newPassword2'] !=  $_REQUEST['newPassword1']){
+        $user = $_SESSION['user'];
+        $oldPassword = $_REQUEST['password1'];
+        $newPassword1 = $_REQUEST['newPassword1'];
+        $newPassword2 = $_REQUEST['newPassword2'];
+
+        if ($newPassword2 !=  $newPassword1){
             array_push($errorArray, 'Confirm new password!');
         } else{
-            if($_REQUEST['password1'] == $_REQUEST['newPassword1'])
-                array_push($errorArray, "Passowrd must differ!");
+            if($oldPassword == $newPassword1)
+                array_push($errorArray, "Password must differ!");
         }
 
         if($this->checkForErrors($errorArray))
             return $this->changePasswordFormAction();
 
         //Check old password
-        $oldPasswordIsOk = $this->model->checkPassword();
+        $oldPasswordIsOk = $this->model->checkPassword($user, $oldPassword);
         if (!$oldPasswordIsOk){
             array_push($errorArray, 'Old Password is not correct');
         }else{
             //Change password
-            $setPassword = $this->model->changePassword();
+            $setPassword = $this->model->changePassword($user, $newPassword1);
             if ($setPassword){
                 //return $this->logoutUserAction();
                 header('Location: index.php?action=logout');
@@ -195,9 +204,13 @@ class Controller{
         if($this->checkForErrors($errorArray))
             return $this->changeEmailFormAction();
 
+        $user = $_SESSION['user'];
+        $email = $_REQUEST['email'];
+        $newEmail = $_REQUEST['newEmail'];
+
         //Email addresses must be different
 
-        if($_REQUEST['email'] == $_REQUEST['newEmail'])
+        if($email == $newEmail)
             array_push($errorArray, "Email addresses must differ!");
 
 
@@ -206,9 +219,9 @@ class Controller{
 
 
         //Check old email
-        $isUsed = $this->model->checkUser();
-        $isValid = $this->model->checkEmail();
-        if ($isUsed !=1 ){
+        $isUsed = $this->model->checkUser($user, $email);
+        $isValid = $this->model->checkEmail($newEmail);
+        if ($isUsed != 1){
             array_push($errorArray, 'Old email is not correct !');
         }
         if ($isValid != 0) {
@@ -220,7 +233,7 @@ class Controller{
 
 
         //Change email
-        $setEmail = $this->model->changeEmail();
+        $setEmail = $this->model->changeEmail($user, $newEmail);
         if ($setEmail){
             return $this->redirect('index.php?action=logout');
         }
@@ -235,14 +248,15 @@ class Controller{
     // Redirects to Login Page
     public function deleteAccountAction(){
         $errorArray = [];
-
+        $userName = $_SESSION['user'];
         //password field must be complete
         if (empty($_REQUEST['password1'])) array_push($errorArray, 'Password Required');
         if  ($this->checkForErrors($errorArray)){
             return $this->deleteAccountFormAction();
         }
         //password must be correct
-        $isCorrect = $this->model->checkPassword();
+        $password = $_REQUEST['password1'];
+        $isCorrect = $this->model->checkPassword($userName, $password);
         if (!$isCorrect) array_push($errorArray, 'Password is not correct!');
         if  ($this->checkForErrors($errorArray)){
             return $this->deleteAccountFormAction();
@@ -250,7 +264,7 @@ class Controller{
 
         //password is correct
 
-        $isDeleted = $this->model->deleteAccount();
+        $isDeleted = $this->model->deleteAccount($userName);
         if ($isDeleted){
             //return $this->logoutUserAction();
             $this->redirect('index.php?action=logout');
@@ -258,8 +272,6 @@ class Controller{
             echo "Database error!";
             return $this->deleteAccountFormAction();
         }
-
-
     }
 
     /// FILES ACTIONS
@@ -335,10 +347,9 @@ class Controller{
         if (move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $destinationFile)){
         //if (move_uploaded_file($myImageName, $destination_file)){
             echo "The file ".basename($uploadedFileName)." has been saved.";
-            //rename($_FILES['fileToUpload']['name'], $myImageName);
 
-            $succes = $this->model->uploadFileData($myImageName);
-            if ($succes){
+            $success = $this->model->uploadFileData($myuserid,$myImageName,$imageFileType);
+            if ($success){
                 echo "The file".basename($_FILES['fileToUpload']['tmp_name'], $destinationFile)."has been stored in the database.";
                 $this->redirect('index.php');
             } else {
@@ -407,20 +418,75 @@ class Controller{
             echo "An active user is required for this task";
             $this->redirect('index.php');
         }
-        $userFiles = $this->model->getUserFiles();
-        //var_dump($userFiles);
+        $userFiles = $this->model->getUserFiles($_SESSION['id']);
+        $count = count($userFiles);
 
-        $count = mysqli_num_rows($userFiles);
-//$this->view->set('images', $userFiles);
-        if($count == 0)
+        if($count== 0)
             echo "You have not uploaded any files ";
         else{
-            while ($row = mysqli_fetch_array($userFiles,MYSQLI_ASSOC)){
-                echo $row['Image'];
-                $imageURL = 'MVC'.DIRECTORY_SEPARATOR.'Uploads'.DIRECTORY_SEPARATOR.$row['Image']; ?>
-                <img src="<?php echo $imageURL; ?>" alt="" />
-                <?php
+            $this->view->set('userFiles', $userFiles);
+            $this->view->display('UserFiles');
+        }
+    }
+
+    //Download file
+    public function downloadFile(){
+        if (!$this->isUserLoggedIn() && empty($_REQUEST['fileName'])){
+            $this->redirect('index.php');
+        }
+        $filename = $_REQUEST['fileName'];
+
+        $filepath = 'MVC'.DIRECTORY_SEPARATOR.'Uploads'.DIRECTORY_SEPARATOR.$filename;
+
+        $fileExtension = $this->model->getFileExtension($filename);
+        if (empty($fileExtension)){
+            echo "File has no extension!";
+            return $this->loggedInFormAction();
+        }
+        $filename = $_SESSION['user'].date('mdYhi').'.'.$fileExtension;
+
+        if (file_exists($filepath)){
+            ob_end_clean();
+            header("Cache-Control: public");
+            header("Content-Description: FIle Transfer");
+            header("Content-Disposition: attachment; filename=$filename");
+            header("Content-Type: application/jpg");
+            header("Content-Transfer-Encoding: binary");
+
+            readfile($filepath);
+            exit;
+        }
+        else{
+            echo "File does not exist";
+        }
+
+    }
+
+    //Delete a file
+    //Redirects to index.php
+    public function deleteFile(){
+        $errorArray = [];
+
+        if (!$this->isUserLoggedIn() && isset($_REQUEST['fileName'])) array_push($errorArray, 'No active user!');
+
+        if  ($this->checkForErrors($errorArray)){
+            $this->redirect('index.php');
+        }
+        var_dump($_REQUEST);
+
+        $image = $_REQUEST['fileName'];
+        $userId = $_SESSION['id'];
+        $isDeleted = $this->model->deleteFile($userId, $image);
+        if ($isDeleted){
+            if(unlink('MVC'.DIRECTORY_SEPARATOR.'Uploads'.DIRECTORY_SEPARATOR.$image))
+                $this->redirect('index.php');
+            else{
+                echo "Directory file error!";
+                return $this->loggedInFormAction();
             }
+        }else{
+            echo "Database error!";
+            return $this->loggedInFormAction();
         }
     }
 

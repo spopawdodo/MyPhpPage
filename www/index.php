@@ -59,6 +59,12 @@ switch ($action) {
     case 'uploadFiles':
         $controller->uploadFiles();
         break;
+    case 'downloadFile':
+        $controller->downloadFile();
+        break;
+    case 'deleteFile':
+        $controller->deleteFile();
+        break;
     default:
         $controller->loginFormAction();
         break;
