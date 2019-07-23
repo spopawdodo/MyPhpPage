@@ -31,23 +31,6 @@
 <?php } else{ ?>
 
 
-    <nav class = "navbar navbar-expand-sm bg-light">
-        <ul class="nav ">
-            <li class="nav-item">
-                <a class = "nav-link" href = "index.php?action=logout">LogOut </a>
-            </li>
-            <li class="nav-item">
-                <a class = "nav-link" href = "index.php?action=changePassword"> Change Password </a>
-            </li>
-            <li class="nav-item">
-                <a class = "nav-link" href = "index.php?action=changeEmail"> Change Email </a>
-            </li>
-            <li class="nav-item">
-                <a class = "nav-link" href = "index.php?action=deleteAccount"> Delete Account </a>
-            </li>
-
-        </ul>
-</nav>
     <br>
 
     <div class = "container">

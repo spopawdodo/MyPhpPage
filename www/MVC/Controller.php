@@ -35,7 +35,7 @@ class Controller{
         if (!$this->isUserLoggedIn()) {
             $this->redirect('index.php');
         }
-        $this->view->display('UserPage');
+        $this->view->display('UserPage', true);
         $this->displayUserFiles();
     }
 
@@ -43,21 +43,21 @@ class Controller{
         if (!$this->isUserLoggedIn()) {
             $this->redirect('index.php');
         }
-        $this->view->display('PasswordSettings');
+        $this->view->display('PasswordSettings', true);
     }
 
     public function changeEmailFormAction(){
         if (!$this->isUserLoggedIn()) {
             $this->redirect('index.php');
         }
-        $this->view->display('EmailSettings');
+        $this->view->display('EmailSettings', true);
     }
 
     public function deleteAccountFormAction(){
         if (!$this->isUserLoggedIn()) {
             $this->redirect('index.php');
         }
-        $this->view->display('deleteAccount');
+        $this->view->display('deleteAccount',true);
     }
 
     ///Login/Logout Actions
@@ -279,7 +279,7 @@ class Controller{
     //Upload files
     //Redirects to home page after upload
     public function uploadFiles(){
-        
+
         if ($_FILES['fileToUpload']['size'] == 0){
             echo "Please select a file";
             return $this->loggedInFormAction();
@@ -429,7 +429,7 @@ class Controller{
             echo "You have not uploaded any files ";
         else{
             $this->view->set('userFiles', $userFiles);
-            $this->view->display('UserFiles');
+            $this->view->display('UserFiles',true, false);
         }
     }
 
