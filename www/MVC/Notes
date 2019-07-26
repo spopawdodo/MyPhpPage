@@ -1,5 +1,4 @@
 DONE :
-
 -> logout action
 -> change Password
 -> change Email
@@ -16,12 +15,29 @@ DONE :
 -> download
 -> alter table -> add column extension
 -> change model functions
-
-
+-> bootstrap
+-> add picture description
+-> add admin -> database column
+             -> home page
+-> autoloader -> quick fix : moved the templates folder to the View Folder
+              -> another fix : add a __DIR__ prefix
+->controller class -> checkController + controller + fileController + formController
 
 TO DO:
 
- * bootstrap
+* add admin -> privileges
+* add picture description filter / censorship
+* index php -> turn swich to a new class -> returns class name + callable ( function  name )
+* problem with deletePicture from admin :-> the delete query returns true even if it didn t delete any file
+                                         -> how to give the correct user name
+                                         -> need to check if an user can delete only his picture
+* trade
+????? Deleted code ?? ( views, paths were modified )
+
+--------------------
+SQL COMMANDS
+
+INSERT INTO Users (User, Password, Email, PasswordTimestamp, UserType) VALUES ('maria', '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684', 'maria@gmail.com', now(), 'admin');
 
 
 

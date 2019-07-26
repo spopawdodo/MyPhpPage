@@ -2,34 +2,20 @@
 error_reporting(E_ALL);
 ini_set('display_errors', true);
 
-require ('MVC/Controller.php');
+require('Config.php');
+require ('Autoloader.php');
 session_start();
 
 // Controller Class
-$controller = new Controller();
+$controller = new MVC\Controllers\Controller();
+$formController = new MVC\Controllers\FormController();
+$fileController = new MVC\Controllers\FileController();
+
 
 $action = $_REQUEST['action'] ?? '';
 
 switch ($action) {
     case 'userLoggedIn':
-        /*switch ($accountAction){
-            case 'logout':
-                $controller->logoutUserAction();
-                break;
-            case 'changePassword':
-                $controller->changePasswordAction();
-                break;
-            case 'changeEmail':
-                $controller->changeEmailAction();
-                break;
-
-            case 'deleteAccount':
-                $controller->deleteAccountAction();
-                break;
-            case 'uploadFiles':
-                $controller->uploadFiles();
-                break;
-            default: break;}*/
         $controller->loggedInFormAction();
         break;
     case 'authenticate':
@@ -51,16 +37,22 @@ switch ($action) {
         $controller->deleteAccountAction();
         break;
     case 'uploadFiles':
-        $controller->uploadFiles();
+        $fileController->uploadFiles();
         break;
     case 'downloadFile':
-        $controller->downloadFile();
+        $fileController->downloadFile();
         break;
     case 'deleteFile':
-        $controller->deleteFile();
+        $fileController->deleteFile();
+        break;
+    case 'adminPage':
+        $controller->loggedInFormAction();
+        break;
+    case 'deleteUserAccount':
+        $controller->deleteUserAccount();
         break;
     default:
-        $controller->loginFormAction();
+        $formController->loginFormAction();
         break;
 }
 
