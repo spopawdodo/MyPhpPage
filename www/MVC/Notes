@@ -22,16 +22,32 @@ DONE :
 -> autoloader -> quick fix : moved the templates folder to the View Folder
               -> another fix : add a __DIR__ prefix
 ->controller class -> checkController + controller + fileController + formController
-
+-> delete account -> remove file from directory
+-> admin -> privileges -> delete file
+                        & download file
+                        & delete user
+-> user can only delete HIS pictures, admin can delete any picture
+-> (solved)  problem with deletePicture from admin :-> the delete query returns true even if it didn t delete any file
+        (partially solved because you can t delete a picture that doesn't exit)
+-> index php -> turn switch to a new class -> returns class name + callable ( function  name )
+-> add picture description filter / censorship :
+        * transform word to w**d
+        * strip text : t.e.!xt to text
+        * transform '0' to 'o', @ to a
+        * see if non-letter character is actually a punctuation sign
 TO DO:
 
-* add admin -> privileges
 * add picture description filter / censorship
-* index php -> turn swich to a new class -> returns class name + callable ( function  name )
-* problem with deletePicture from admin :-> the delete query returns true even if it didn t delete any file
-                                         -> how to give the correct user name
-                                         -> need to check if an user can delete only his picture
-* trade
+
+
+    I want. to p.u.n.c.h. yo!u damn.. wh0re.
+
+* trait
+
+????? BUG that happens to be a FEATURE : user requests send the userName
+                                         admin requests send the userId of the user
+
+
 ????? Deleted code ?? ( views, paths were modified )
 
 --------------------

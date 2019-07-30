@@ -11,50 +11,30 @@ $controller = new MVC\Controllers\Controller();
 $formController = new MVC\Controllers\FormController();
 $fileController = new MVC\Controllers\FileController();
 
+$router = new MVC\Routing\Routing();
 
 $action = $_REQUEST['action'] ?? '';
 
-switch ($action) {
-    case 'userLoggedIn':
-        $controller->loggedInFormAction();
+$arr = $router->getAction($action);
+$callable = $arr[1];
+
+switch ($arr[0]){
+    case 1:
+        $controller->$callable();
         break;
-    case 'authenticate':
-        $controller->authenticateUserAction();
+    case 2:
+        $fileController->$callable();
         break;
-    case 'createAccount':
-        $controller->signUpUserAction();
-        break;
-    case 'logout':
-        $controller->logoutUserAction();
-        break;
-    case 'changePassword':
-        $controller->changePasswordAction();
-        break;
-    case 'changeEmail':
-        $controller->changeEmailAction();
-        break;
-    case 'deleteAccount':
-        $controller->deleteAccountAction();
-        break;
-    case 'uploadFiles':
-        $fileController->uploadFiles();
-        break;
-    case 'downloadFile':
-        $fileController->downloadFile();
-        break;
-    case 'deleteFile':
-        $fileController->deleteFile();
-        break;
-    case 'adminPage':
-        $controller->loggedInFormAction();
-        break;
-    case 'deleteUserAccount':
-        $controller->deleteUserAccount();
+    case 3:
+        $formController->$callable();
         break;
     default:
-        $formController->loginFormAction();
+        echo ("Action unknown !");
+        die();
         break;
+
 }
+
 
 var_dump($action);
 var_dump($_SESSION);

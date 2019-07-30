@@ -3,8 +3,6 @@
 
 namespace MVC\Controllers;
 
-use MVC\Controllers\CheckController;
-use MVC\Controllers\FormController;
 use MVC\Views\View;
 use MVC\Models\Files;
 use MVC\Models\User;
@@ -60,7 +58,7 @@ class Controller{
         $page = $this->modelUsers->getLogin($user, $password);
         if ($page == true) {
             $_SESSION['user'] = $user;
-            $id = $this->modelUsers->getUserId();
+            $id = $this->modelUsers->getUserId($_SESSION['user']);
             $privilege = $this->modelUsers->getPrivilege($user);
             if ($id > 0)
                 $_SESSION['id'] = $id;
@@ -105,29 +103,29 @@ class Controller{
                 $isFree = $this->modelUsers->checkUser($user, $email);
                 if ($isFree != 0){
                     echo "Username taken !";
-                    return $this->signUpFormAction();
+                    return $this->formController->signUpFormAction();
                 }
                 $accountCreated = $this->modelUsers->createAccount($user, $password, $email);
                 if (!$accountCreated){
                     echo "Database Error !";
-                    return  $this->signUpFormAction();
+                    return  $this->formController->signUpFormAction();
                 }
                 else{
                     $_SESSION['user'] = $user;
-                    $_SESSION['id'] = $this->modelUsers->getUserId();
+                    $_SESSION['id'] = $this->modelUsers->getUserId($_SESSION['user']);
                     $_SESSION['role'] = 'user';
                     header('Location: index.php?action=userLoggedIn');
                     exit;
                 }
             }else{
                 echo "Passwords must be identical !";
-                return  $this->signUpFormAction();
+                return  $this->formController->signUpFormAction();
             }
         }else{
 
             if (isset($_REQUEST['newUser']) && isset($_REQUEST['email']) && isset($_REQUEST['password1']) && isset($_REQUEST['password2']))
                 echo "Empty fields !";
-            return $this->signUpFormAction();
+            return $this->formController->signUpFormAction();
         }
 
     }
@@ -244,7 +242,7 @@ class Controller{
     public function deleteAccountAction(){
         $errorArray = [];
         $userName = $_SESSION['user'];
-
+        $userId = $_SESSION['id'];
         //password field must be complete
         if (empty($_REQUEST['password1'])) array_push($errorArray, 'Password Required');
         if  ($this->checkController->checkForErrors($errorArray)){
@@ -260,8 +258,12 @@ class Controller{
 
         //password is correct
 
-        $isDeleted = $this->modelUsers->deleteAccount($userName);
+        $isDeleted = $this->modelUsers->deleteAccount($userId);
+        $userFiles = $this->modelFiles->getUserFiles($userId);
         if ($isDeleted){
+            foreach($userFiles as $key=>$value){
+                $this->fileController->removeFile($value['Image']);
+            }
             $this->checkController->redirect('index.php?action=logout');
         }else{
             echo "Database error!";
@@ -292,8 +294,23 @@ class Controller{
     }
 
     public function deleteUserAccount(){
-        echo "Function not declared !";
-        die();
+        if (!$this->checkController->isAdmin()){
+            echo ("You cannot use this function as a user");
+            die();
+        }
+        $userId = $_REQUEST['userId'];
+
+        $isDeleted = $this->modelUsers->deleteAccount($userId);
+        $userFiles = $this->modelFiles->getUserFiles($userId);
+        if ($isDeleted){
+            foreach($userFiles as $key=>$value){
+                $this->fileController->removeFile($value['Image']);
+            }
+            $this->checkController->redirect('index.php');
+        }else{
+            echo "Database error!";
+            return $this->checkController->redirect('index.php');
+        }
     }
 
     /// FILES ACTIONS

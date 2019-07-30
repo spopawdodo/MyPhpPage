@@ -14,7 +14,7 @@
 
 <body>
 <div class="container">
-    <h3> <?php echo $this->getUser(); ?> Image Galery </h3>
+    <h3> <?= $this->getUser() ?> Image Galery </h3>
     <div class = "card-deck">
 <?php
 $userFiles = $this->get('userFiles');

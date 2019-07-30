@@ -36,7 +36,7 @@
             <td> <?= $value['Email'];?></td>
             <td> <?= $value['UserType'];?></td>
             <td>
-                <a class = "nav-link" href = "index.php?action=deleteUserAccount&user=<?=$value['UserId']?>"> Delete Account </a>
+                <a class = "nav-link" href = "index.php?action=deleteUserAccount&userId=<?=$value['UserId']?>"> Delete Account </a>
             </td>
         </tr>
         </tbody>

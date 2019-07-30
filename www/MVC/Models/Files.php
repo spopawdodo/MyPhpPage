@@ -75,21 +75,15 @@ class Files{
     //True -> user has not uploaded the file
     public function checkUserFile($myuserid, $myImageName):bool{
         $db = $this->connect();
-        if (isset($_FILES['fileToUpload']['name'])){
-            $myuserid = mysqli_real_escape_string($db,$myuserid);
-            $myimage = mysqli_real_escape_string($db,$myImageName);
-        }
-        else{
-            echo " Active User and file are required! ";
-            return false;
-        }
+        $myuserid = mysqli_real_escape_string($db,$myuserid);
+        $myimage = mysqli_real_escape_string($db,$myImageName);
         // Select query
         $sql = "SELECT ImageId FROM Images WHERE UserId = '$myuserid' and Image = '$myimage';";
-
+        var_dump($sql);
         $result = mysqli_query($db,$sql);
 
         $count = mysqli_num_rows($result);
-
+        var_dump($count);
         mysqli_close($db);
         if ($count != 0)
             return false;
@@ -98,11 +92,10 @@ class Files{
 
     //True -> delete successful
     //False-> error
-    public function deleteFile($userId, $image):bool{
+    public function deleteFile( $image):bool{
         $db = $this->connect();
-        $myuserid = mysqli_real_escape_string($db,$userId);
 
-        $sql ="DELETE FROM Images where UserId = '$myuserid' and Image = '$image';";
+        $sql ="DELETE FROM Images where Image = '$image';";
         $result = mysqli_query($db, $sql);
         mysqli_close($db);
 

@@ -36,6 +36,8 @@ class CheckController
             ;
     }
 
+    //True -> active user is admin
+    //False -> not an admin
     public function isAdmin(){
         return $this->isUserLoggedIn()
             && $_SESSION['role'] == 'admin';

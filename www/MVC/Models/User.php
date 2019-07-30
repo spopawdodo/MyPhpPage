@@ -41,6 +41,7 @@ class User{
 
     //-1 error in data
     // returns the count of the results
+    // Checks if the user and email are already stored in database
     public function checkUser($user, $email):int {
         $db = $this->connect();
 
@@ -48,7 +49,7 @@ class User{
         $myemail = mysqli_real_escape_string($db,$email);
 
         // Select query
-        $sql = "SELECT UserId FROM Users WHERE User = '$myusername' and Email = '$myemail';";
+        $sql = "SELECT UserId FROM Users WHERE User = '$myusername' or Email = '$myemail';";
 
         $result = mysqli_query($db,$sql);
 
@@ -59,6 +60,7 @@ class User{
         return $count;
     }
 
+    // Return the user id for the email
     public function checkEmail($email):int {
         $db = $this->connect();
 
@@ -94,15 +96,9 @@ class User{
         return false;
     }
 
-    //Returns the ID of the current user
-    public function getID($db):int{
-        if (isset($_SESSION['user'])){
-            $myusername = mysqli_real_escape_string($db,$_SESSION['user']);
-        }
-        else{
-            echo 'No active session!';
-            return -1;
-        }
+    //Returns the ID of the requested user
+    public function getID($db, $user):int{
+        $myusername = mysqli_real_escape_string($db,$user);
 
         $sql = "SELECT UserId FROM Users WHERE User = '$myusername';";
         $result = mysqli_query($db,$sql);
@@ -115,16 +111,17 @@ class User{
         return -1;
     }
 
-    public function getUserId():int{
+    public function getUserId($user):int{
         $db = $this->connect();
 
-        $id = $this->getID($db);
+        $id = $this->getID($db, $user);
 
         mysqli_close($db);
         return $id;
     }
 
     //Returns the privilege of the current user
+    // 'user' or 'admin'
     public function getPrivilege($user){
         $db = $this->connect();
         $myusername = mysqli_real_escape_string($db,$user);
@@ -197,15 +194,20 @@ class User{
         return true;
     }
 
-    public function deleteAccount($myusername):bool{
+    public function deleteAccount($myUserId):bool{
         $db = $this->connect();
-        $myusername = mysqli_real_escape_string($db,$myusername);
+        $myUserId = mysqli_real_escape_string($db,$myUserId);
 
-        $sql ="DELETE FROM Users where User = '$myusername';";
+        $sql ="DELETE FROM Users where UserId = '$myUserId';";
 
         $result = mysqli_query($db, $sql);
+        $rowsAffected = mysqli_affected_rows($db);
         mysqli_close($db);
 
+        if ($rowsAffected == 0){
+            echo ('No file deleted !');
+            die();
+        }
         if (!$result){
             return false;
         }
