@@ -1,0 +1,60 @@
+DONE :
+-> logout action
+-> change Password
+-> change Email
+-> delete account
+-> upload files
+-> rename tables + columns(camelcase)
+-> encrypt file name ( partially)
+-> md5
+-> separate picture display from controller ( create a view function)
+-> delete user -> delete user file
+               -> works if user has no files uploaded
+               -> delete file from directory
+-> display files in view mode
+-> download
+-> alter table -> add column extension
+-> change model functions
+-> bootstrap
+-> add picture description
+-> add admin -> database column
+             -> home page
+-> autoloader -> quick fix : moved the templates folder to the View Folder
+              -> another fix : add a __DIR__ prefix
+->controller class -> checkController + controller + fileController + formController
+-> delete account -> remove file from directory
+-> admin -> privileges -> delete file
+                        & download file
+                        & delete user
+-> user can only delete HIS pictures, admin can delete any picture
+-> (solved)  problem with deletePicture from admin :-> the delete query returns true even if it didn t delete any file
+        (partially solved because you can t delete a picture that doesn't exit)
+-> index php -> turn switch to a new class -> returns class name + callable ( function  name )
+-> add picture description filter / censorship :
+        * transform word to w**d
+        * strip text : t.e.!xt to text
+        * transform '0' to 'o', @ to a
+        * see if non-letter character is actually a punctuation sign
+TO DO:
+
+* add picture description filter / censorship
+
+
+    I want. to p.u.n.c.h. yo!u damn.. wh0re.
+
+* trait
+
+????? BUG that happens to be a FEATURE : user requests send the userName
+                                         admin requests send the userId of the user
+
+
+????? Deleted code ?? ( views, paths were modified )
+
+--------------------
+SQL COMMANDS
+
+INSERT INTO Users (User, Password, Email, PasswordTimestamp, UserType) VALUES ('maria', '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684', 'maria@gmail.com', now(), 'admin');
+
+
+
+
